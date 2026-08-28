@@ -3,100 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Creative team's year-end work dashboard</title>
+<title>Year-end work dashboard</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="wrap">
-    <h1>Creative team's year-end work dashboard</h1>
-
-    <div class="cards">
-      <div class="card">
-        <div class="label">Total Tasks</div>
-        <div class="value" id="cardTotal">–</div>
-      </div>
-      <div class="card">
-        <div class="label">Projects</div>
-        <div class="value" id="cardProjects">–</div>
-      </div>
-      <div class="card">
-        <div class="label">Reporting Window</div>
-        <div class="value" id="cardWindow">–</div>
-      </div>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Designer</th>
-          <th>Tasks</th>
-          <th>Projects</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-    <div class="empty" id="emptyState" style="display:none;">No data yet — run the "Refresh JIRA dashboard data" workflow.</div>
-
-    <div class="meta" id="generatedAt"></div>
+    <div class="empty">You need a specific link to view a dashboard here.</div>
   </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<script src="dashboard.js"></script>
-<script>
-  async function init() {
-    const data = await loadDashboardData();
-    const tasks = data.tasks || [];
-
-    document.getElementById('cardTotal').textContent = tasks.length;
-    document.getElementById('cardProjects').textContent = new Set(tasks.map(t => t.project)).size;
-    if (data.reportingWindow) {
-      document.getElementById('cardWindow').textContent =
-        `${formatMonthYear(data.reportingWindow.start)} – ${formatMonthYear(data.reportingWindow.end)}`;
-    }
-    if (data.generatedAt) {
-      document.getElementById('generatedAt').textContent = `Last refreshed ${new Date(data.generatedAt).toLocaleString()}`;
-    }
-
-    const byDesigner = new Map();
-    tasks.forEach(t => {
-      if (!byDesigner.has(t.assigneeSlug)) byDesigner.set(t.assigneeSlug, { name: t.assignee, tasks: 0, projects: new Set() });
-      const entry = byDesigner.get(t.assigneeSlug);
-      entry.tasks += 1;
-      entry.projects.add(t.project);
-    });
-
-    const rows = [...byDesigner.entries()].sort((a, b) => b[1].tasks - a[1].tasks);
-
-    const tbody = document.getElementById('tableBody');
-    const emptyState = document.getElementById('emptyState');
-    tbody.innerHTML = '';
-    rows.forEach(([slug, stats]) => {
-      const tr = document.createElement('tr');
-      const href = `assignee.html?u=${encodeURIComponent(slug)}`;
-      tr.innerHTML = `
-        <td><a class="designer-link" href="${href}">${stats.name}</a></td>
-        <td>${stats.tasks}</td>
-        <td class="secondary">${stats.projects.size}</td>
-        <td><button class="copy-link-btn" type="button" title="Copy link" aria-label="Copy link to ${stats.name}'s dashboard">${LINK_ICON}</button></td>
-      `;
-      tr.querySelector('.copy-link-btn').addEventListener('click', () => {
-        const url = new URL(href, location.href).toString();
-        copyToClipboard(url)
-          .then(() => showToast('Link copied'))
-          .catch(() => showToast('Could not copy link'));
-      });
-      tbody.appendChild(tr);
-    });
-    emptyState.style.display = rows.length ? 'none' : 'block';
-  }
-
-  init().catch(err => {
-    document.getElementById('emptyState').textContent = 'Could not load data.json — run the "Refresh JIRA dashboard data" workflow first.';
-    document.getElementById('emptyState').style.display = 'block';
-    console.error(err);
-  });
-</script>
 </body>
 </html>
