@@ -87,8 +87,7 @@ function earliestTransitionTo(histories, statusName) {
 async function main() {
   const jql =
     `assignee = "${ASSIGNEE_EMAIL}" ` +
-    `AND status changed to "${STATUS_DESIGN_DONE}" ` +
-    `AND status changed to "${STATUS_DISCOVERY}" after "${DISCOVERY_START}" before "${DISCOVERY_END}" ` +
+    `AND status changed to "${STATUS_DESIGN_DONE}" after "${DISCOVERY_START}" before "${DISCOVERY_END}" ` +
     `ORDER BY created DESC`
 
   console.log('JQL:', jql)
@@ -98,13 +97,16 @@ async function main() {
   const rows = []
   for (const issue of issues) {
     const histories = await getFullChangelog(issue.key)
-    const discoveryDate = earliestTransitionTo(histories, STATUS_DISCOVERY)
     const designDoneDate = earliestTransitionTo(histories, STATUS_DESIGN_DONE)
 
-    if (!discoveryDate || !designDoneDate) {
-      console.warn(`Skipping ${issue.key}: missing transition date(s)`)
+    if (!designDoneDate) {
+      console.warn(`Skipping ${issue.key}: missing Design Done transition date`)
       continue
     }
+
+    // Some tickets (e.g. bugs, epics) skip Discovery entirely. Fall back to
+    // Design Done date so the row still has a Discovery Date to sort/filter on.
+    const discoveryDate = earliestTransitionTo(histories, STATUS_DISCOVERY) || designDoneDate
 
     rows.push({
       key: issue.key,
@@ -112,6 +114,7 @@ async function main() {
       project: issue.fields.project.key,
       discoveryDate: discoveryDate.toISOString(),
       designDoneDate: designDoneDate.toISOString(),
+      hadDiscovery: Boolean(earliestTransitionTo(histories, STATUS_DISCOVERY)),
       url: `${JIRA_BASE_URL}/browse/${issue.key}`,
     })
   }
