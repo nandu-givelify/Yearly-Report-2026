@@ -1,7 +1,7 @@
 // Pulls Jira issues assigned to anyone in ASSIGNEE_EMAILS that moved through
-// STATUS_DISCOVERY and STATUS_DESIGN_DONE within [DISCOVERY_START, DISCOVERY_END],
-// derives the two transition dates from each issue's changelog, and writes
-// docs/data.json for the static dashboard to read.
+// STATUS_DISCOVERY and any of STATUS_DESIGN_DONE_OPTIONS within
+// [DISCOVERY_START, DISCOVERY_END], derives the two transition dates from
+// each issue's changelog, and writes docs/data.json for the dashboard.
 
 const JIRA_BASE_URL = requireEnv('JIRA_BASE_URL').replace(/\/$/, '')
 const JIRA_EMAIL = requireEnv('JIRA_EMAIL')
@@ -13,7 +13,11 @@ const ASSIGNEE_EMAILS = requireEnv('ASSIGNEE_EMAILS')
 const DISCOVERY_START = requireEnv('DISCOVERY_START') // e.g. 2025-08-01
 const DISCOVERY_END = requireEnv('DISCOVERY_END') // e.g. 2026-08-31
 const STATUS_DISCOVERY = process.env.STATUS_DISCOVERY || 'Discovery'
-const STATUS_DESIGN_DONE = process.env.STATUS_DESIGN_DONE || 'Design Done'
+// Some projects use "Done" instead of "Design Done" for the same terminal state.
+const STATUS_DESIGN_DONE_OPTIONS = (process.env.STATUS_DESIGN_DONE || 'Design Done,Done')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 // Kept as a secret (not hardcoded here) so the salt isn't visible in this
 // public repo's source — otherwise anyone could recompute a slug from a
 // known Jira accountId.
@@ -84,11 +88,12 @@ async function getFullChangelog(issueKey) {
   return histories
 }
 
-function earliestTransitionTo(histories, statusName) {
+function earliestTransitionTo(histories, statusNames) {
+  const names = Array.isArray(statusNames) ? statusNames : [statusNames]
   let earliest = null
   for (const history of histories) {
     for (const item of history.items) {
-      if (item.field === 'status' && item.toString === statusName) {
+      if (item.field === 'status' && names.includes(item.toString)) {
         const when = new Date(history.created)
         if (!earliest || when < earliest) earliest = when
       }
@@ -99,9 +104,12 @@ function earliestTransitionTo(histories, statusName) {
 
 async function main() {
   const assigneeList = ASSIGNEE_EMAILS.map((e) => `"${e}"`).join(', ')
+  const designDoneClause = STATUS_DESIGN_DONE_OPTIONS.map(
+    (s) => `status changed to "${s}" after "${DISCOVERY_START}" before "${DISCOVERY_END}"`
+  ).join(' OR ')
   const jql =
     `assignee in (${assigneeList}) ` +
-    `AND status changed to "${STATUS_DESIGN_DONE}" after "${DISCOVERY_START}" before "${DISCOVERY_END}" ` +
+    `AND (${designDoneClause}) ` +
     `ORDER BY created DESC`
 
   console.log('JQL:', jql)
@@ -111,7 +119,7 @@ async function main() {
   const rows = []
   for (const issue of issues) {
     const histories = await getFullChangelog(issue.key)
-    const designDoneDate = earliestTransitionTo(histories, STATUS_DESIGN_DONE)
+    const designDoneDate = earliestTransitionTo(histories, STATUS_DESIGN_DONE_OPTIONS)
 
     if (!designDoneDate) {
       console.warn(`Skipping ${issue.key}: missing Design Done transition date`)
