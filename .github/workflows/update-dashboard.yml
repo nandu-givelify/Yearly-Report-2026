@@ -1,0 +1,37 @@
+name: Refresh JIRA dashboard data
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch JIRA data
+        env:
+          JIRA_BASE_URL: https://givelify15.atlassian.net
+          JIRA_EMAIL: ngoli@givelify.com
+          JIRA_API_TOKEN: ${{ secrets.JIRA_YEARLY_REPORT }}
+          ASSIGNEE_EMAIL: ngoli@givelify.com
+          DISCOVERY_START: "2025-08-01"
+          DISCOVERY_END: "2026-08-31"
+          STATUS_DISCOVERY: "Discovery"
+          STATUS_DESIGN_DONE: "Design Done"
+        run: node scripts/fetch-jira.mjs
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "chore: refresh dashboard data"
+          git push
