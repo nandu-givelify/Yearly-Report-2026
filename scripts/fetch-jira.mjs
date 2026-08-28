@@ -12,7 +12,11 @@ const ASSIGNEE_EMAILS = requireEnv('ASSIGNEE_EMAILS')
   .filter(Boolean)
 const DISCOVERY_START = requireEnv('DISCOVERY_START') // e.g. 2025-08-01
 const DISCOVERY_END = requireEnv('DISCOVERY_END') // e.g. 2026-08-31
-const STATUS_DISCOVERY = process.env.STATUS_DISCOVERY || 'Discovery'
+// Some projects use "In Progress" instead of "Discovery" for the same starting state.
+const STATUS_DISCOVERY_OPTIONS = (process.env.STATUS_DISCOVERY || 'Discovery,In Progress')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 // Some projects use "Done" instead of "Design Done" for the same terminal state.
 const STATUS_DESIGN_DONE_OPTIONS = (process.env.STATUS_DESIGN_DONE || 'Design Done,Done')
   .split(',')
@@ -128,7 +132,7 @@ async function main() {
 
     // Some tickets (e.g. bugs, epics) skip Discovery entirely. Fall back to
     // Design Done date so the row still has a Discovery Date to sort/filter on.
-    const discoveryDate = earliestTransitionTo(histories, STATUS_DISCOVERY) || designDoneDate
+    const discoveryDate = earliestTransitionTo(histories, STATUS_DISCOVERY_OPTIONS) || designDoneDate
 
     rows.push({
       key: issue.key,
@@ -138,7 +142,7 @@ async function main() {
       assigneeSlug: slugFor(issue.fields.assignee && issue.fields.assignee.accountId),
       discoveryDate: discoveryDate.toISOString(),
       designDoneDate: designDoneDate.toISOString(),
-      hadDiscovery: Boolean(earliestTransitionTo(histories, STATUS_DISCOVERY)),
+      hadDiscovery: Boolean(earliestTransitionTo(histories, STATUS_DISCOVERY_OPTIONS)),
       url: `${JIRA_BASE_URL}/browse/${issue.key}`,
     })
   }

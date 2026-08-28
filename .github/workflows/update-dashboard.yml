@@ -38,7 +38,7 @@ jobs:
             ngoli@givelify.com
           DISCOVERY_START: "2025-08-01"
           DISCOVERY_END: "2026-08-31"
-          STATUS_DISCOVERY: "Discovery"
+          STATUS_DISCOVERY: "Discovery,In Progress"
           STATUS_DESIGN_DONE: "Design Done,Done"
         run: node scripts/fetch-jira.mjs
 
