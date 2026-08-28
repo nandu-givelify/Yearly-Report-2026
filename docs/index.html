@@ -31,6 +31,7 @@
           <th>Designer</th>
           <th>Tasks</th>
           <th>Projects</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -39,6 +40,8 @@
 
     <div class="meta" id="generatedAt"></div>
   </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script src="dashboard.js"></script>
 <script>
@@ -71,11 +74,19 @@
     tbody.innerHTML = '';
     rows.forEach(([slug, stats]) => {
       const tr = document.createElement('tr');
+      const href = `assignee.html?u=${encodeURIComponent(slug)}`;
       tr.innerHTML = `
-        <td><a class="designer-link" href="assignee.html?u=${encodeURIComponent(slug)}">${stats.name}</a></td>
+        <td><a class="designer-link" href="${href}">${stats.name}</a></td>
         <td>${stats.tasks}</td>
         <td class="secondary">${stats.projects.size}</td>
+        <td><button class="copy-link-btn" type="button" title="Copy link" aria-label="Copy link to ${stats.name}'s dashboard">${LINK_ICON}</button></td>
       `;
+      tr.querySelector('.copy-link-btn').addEventListener('click', () => {
+        const url = new URL(href, location.href).toString();
+        copyToClipboard(url)
+          .then(() => showToast('Link copied'))
+          .catch(() => showToast('Could not copy link'));
+      });
       tbody.appendChild(tr);
     });
     emptyState.style.display = rows.length ? 'none' : 'block';
