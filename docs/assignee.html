@@ -8,7 +8,6 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="back-link" href="index.html">&larr; Back to team dashboard</a>
     <h1 id="pageTitle">Year-end work dashboard</h1>
 
     <div class="cards">
@@ -51,18 +50,25 @@
 <script src="dashboard.js"></script>
 <script>
   async function init() {
-    const name = new URLSearchParams(location.search).get('name');
-    if (!name) {
-      document.getElementById('emptyState').textContent = 'No designer specified. Go back and click a name from the team dashboard.';
+    const slug = new URLSearchParams(location.search).get('u');
+    if (!slug) {
+      document.getElementById('emptyState').textContent = 'No dashboard specified.';
       document.getElementById('emptyState').style.display = 'block';
       return;
     }
 
+    const data = await loadDashboardData();
+    const tasks = (data.tasks || []).filter(t => t.assigneeSlug === slug);
+
+    if (!tasks.length) {
+      document.getElementById('emptyState').textContent = 'No tasks found for this link.';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    const name = tasks[0].assignee;
     document.title = `${name}'s year-end dashboard`;
     document.getElementById('pageTitle').textContent = `${name}'s year-end dashboard`;
-
-    const data = await loadDashboardData();
-    const tasks = (data.tasks || []).filter(t => t.assignee === name);
 
     document.getElementById('cardTotal').textContent = tasks.length;
     document.getElementById('cardProjects').textContent = new Set(tasks.map(t => t.project)).size;

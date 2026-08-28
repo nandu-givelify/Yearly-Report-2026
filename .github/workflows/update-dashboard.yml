@@ -21,6 +21,7 @@ jobs:
           JIRA_BASE_URL: https://givelify15.atlassian.net
           JIRA_EMAIL: ngoli@givelify.com
           JIRA_API_TOKEN: ${{ secrets.JIRA_YEARLY_REPORT }}
+          SLUG_SALT: ${{ secrets.SLUG_SALT }}
           ASSIGNEE_EMAILS: >-
             abohitsoi@givelify.com,
             grosser@givelify.com,

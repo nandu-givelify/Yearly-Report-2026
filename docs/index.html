@@ -58,8 +58,8 @@
 
     const byDesigner = new Map();
     tasks.forEach(t => {
-      if (!byDesigner.has(t.assignee)) byDesigner.set(t.assignee, { tasks: 0, projects: new Set() });
-      const entry = byDesigner.get(t.assignee);
+      if (!byDesigner.has(t.assigneeSlug)) byDesigner.set(t.assigneeSlug, { name: t.assignee, tasks: 0, projects: new Set() });
+      const entry = byDesigner.get(t.assigneeSlug);
       entry.tasks += 1;
       entry.projects.add(t.project);
     });
@@ -69,10 +69,10 @@
     const tbody = document.getElementById('tableBody');
     const emptyState = document.getElementById('emptyState');
     tbody.innerHTML = '';
-    rows.forEach(([name, stats]) => {
+    rows.forEach(([slug, stats]) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><a class="designer-link" href="assignee.html?name=${encodeURIComponent(name)}">${name}</a></td>
+        <td><a class="designer-link" href="assignee.html?u=${encodeURIComponent(slug)}">${stats.name}</a></td>
         <td>${stats.tasks}</td>
         <td class="secondary">${stats.projects.size}</td>
       `;

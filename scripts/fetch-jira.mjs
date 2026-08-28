@@ -14,6 +14,10 @@ const DISCOVERY_START = requireEnv('DISCOVERY_START') // e.g. 2025-08-01
 const DISCOVERY_END = requireEnv('DISCOVERY_END') // e.g. 2026-08-31
 const STATUS_DISCOVERY = process.env.STATUS_DISCOVERY || 'Discovery'
 const STATUS_DESIGN_DONE = process.env.STATUS_DESIGN_DONE || 'Design Done'
+// Kept as a secret (not hardcoded here) so the salt isn't visible in this
+// public repo's source — otherwise anyone could recompute a slug from a
+// known Jira accountId.
+const SLUG_SALT = requireEnv('SLUG_SALT')
 
 function requireEnv(name) {
   const v = process.env[name]
@@ -22,6 +26,12 @@ function requireEnv(name) {
 }
 
 const authHeader = 'Basic ' + Buffer.from(`${JIRA_EMAIL}:${JIRA_API_TOKEN}`).toString('base64')
+
+const { createHash } = await import('node:crypto')
+function slugFor(accountId) {
+  if (!accountId) return 'unassigned'
+  return createHash('sha256').update(`${SLUG_SALT}:${accountId}`).digest('hex').slice(0, 12)
+}
 
 async function jiraFetch(path, options = {}) {
   const res = await fetch(`${JIRA_BASE_URL}${path}`, {
@@ -117,6 +127,7 @@ async function main() {
       summary: issue.fields.summary,
       project: issue.fields.project.key,
       assignee: issue.fields.assignee ? issue.fields.assignee.displayName : 'Unassigned',
+      assigneeSlug: slugFor(issue.fields.assignee && issue.fields.assignee.accountId),
       discoveryDate: discoveryDate.toISOString(),
       designDoneDate: designDoneDate.toISOString(),
       hadDiscovery: Boolean(earliestTransitionTo(histories, STATUS_DISCOVERY)),
