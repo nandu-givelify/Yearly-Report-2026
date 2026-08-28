@@ -22,10 +22,9 @@ const STATUS_DESIGN_DONE_OPTIONS = (process.env.STATUS_DESIGN_DONE || 'Design Do
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean)
-// Kept as a secret (not hardcoded here) so the salt isn't visible in this
-// public repo's source — otherwise anyone could recompute a slug from a
-// known Jira accountId.
-const SLUG_SALT = requireEnv('SLUG_SALT')
+// Used only to turn each person's Jira accountId into an opaque URL code
+// (e.g. ?u=71c0a9ae33a3) instead of putting their name in the link.
+const SLUG_SALT = 'yearly-report-2026-fc1f881026493abf'
 
 function requireEnv(name) {
   const v = process.env[name]
