@@ -5,10 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Year-end work dashboard</title>
 <link rel="stylesheet" href="styles.css" />
+<style>
+  .joke-wrap {
+    min-height: calc(100vh - 96px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .joke-emoji { font-size: 48px; margin-bottom: 12px; }
+  .joke-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .joke-sub { color: var(--text-secondary); font-size: 14px; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="empty">You need a specific link to view a dashboard here.</div>
+  <div class="wrap joke-wrap">
+    <div>
+      <div class="joke-emoji">🕵️‍♂️</div>
+      <div class="joke-title">Nice try, detective.</div>
+      <div class="joke-sub">There's nothing to snoop here — you'll need the actual link someone sent you.</div>
+    </div>
   </div>
 </body>
 </html>
