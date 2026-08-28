@@ -1,4 +1,4 @@
-// Pulls Jira issues assigned to ASSIGNEE_EMAIL that moved through
+// Pulls Jira issues assigned to anyone in ASSIGNEE_EMAILS that moved through
 // STATUS_DISCOVERY and STATUS_DESIGN_DONE within [DISCOVERY_START, DISCOVERY_END],
 // derives the two transition dates from each issue's changelog, and writes
 // docs/data.json for the static dashboard to read.
@@ -6,7 +6,10 @@
 const JIRA_BASE_URL = requireEnv('JIRA_BASE_URL').replace(/\/$/, '')
 const JIRA_EMAIL = requireEnv('JIRA_EMAIL')
 const JIRA_API_TOKEN = requireEnv('JIRA_API_TOKEN')
-const ASSIGNEE_EMAIL = requireEnv('ASSIGNEE_EMAIL')
+const ASSIGNEE_EMAILS = requireEnv('ASSIGNEE_EMAILS')
+  .split(',')
+  .map((e) => e.trim())
+  .filter(Boolean)
 const DISCOVERY_START = requireEnv('DISCOVERY_START') // e.g. 2025-08-01
 const DISCOVERY_END = requireEnv('DISCOVERY_END') // e.g. 2026-08-31
 const STATUS_DISCOVERY = process.env.STATUS_DISCOVERY || 'Discovery'
@@ -44,7 +47,7 @@ async function searchIssues(jql) {
     const body = {
       jql,
       maxResults: 100,
-      fields: ['summary', 'project'],
+      fields: ['summary', 'project', 'assignee'],
       ...(nextPageToken ? { nextPageToken } : {}),
     }
     const page = await jiraFetch('/rest/api/3/search/jql', {
@@ -85,8 +88,9 @@ function earliestTransitionTo(histories, statusName) {
 }
 
 async function main() {
+  const assigneeList = ASSIGNEE_EMAILS.map((e) => `"${e}"`).join(', ')
   const jql =
-    `assignee = "${ASSIGNEE_EMAIL}" ` +
+    `assignee in (${assigneeList}) ` +
     `AND status changed to "${STATUS_DESIGN_DONE}" after "${DISCOVERY_START}" before "${DISCOVERY_END}" ` +
     `ORDER BY created DESC`
 
@@ -112,6 +116,7 @@ async function main() {
       key: issue.key,
       summary: issue.fields.summary,
       project: issue.fields.project.key,
+      assignee: issue.fields.assignee ? issue.fields.assignee.displayName : 'Unassigned',
       discoveryDate: discoveryDate.toISOString(),
       designDoneDate: designDoneDate.toISOString(),
       hadDiscovery: Boolean(earliestTransitionTo(histories, STATUS_DISCOVERY)),

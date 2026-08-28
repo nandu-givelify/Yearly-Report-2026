@@ -21,7 +21,20 @@ jobs:
           JIRA_BASE_URL: https://givelify15.atlassian.net
           JIRA_EMAIL: ngoli@givelify.com
           JIRA_API_TOKEN: ${{ secrets.JIRA_YEARLY_REPORT }}
-          ASSIGNEE_EMAIL: ngoli@givelify.com
+          ASSIGNEE_EMAILS: >-
+            abohitsoi@givelify.com,
+            grosser@givelify.com,
+            akallemeyn@givelify.com,
+            kshtukar@givelify.com,
+            olysenko@givelify.com,
+            ebrown@givelify.com,
+            stalat@givelify.com,
+            sarney@givelify.com,
+            nlukianova@givelify.com,
+            dhoward@givelify.com,
+            cmiras@givelify.com,
+            alepeiko@givelify.com,
+            ngoli@givelify.com
           DISCOVERY_START: "2025-08-01"
           DISCOVERY_END: "2026-08-31"
           STATUS_DISCOVERY: "Discovery"

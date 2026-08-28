@@ -122,6 +122,7 @@
     </div>
 
     <div class="controls">
+      <select id="assigneeFilter"><option value="">All assignees</option></select>
       <select id="projectFilter"><option value="">All projects</option></select>
       <select id="quarterFilter"><option value="">All quarters</option></select>
       <input type="search" id="searchInput" placeholder="Search tasks…" />
@@ -133,6 +134,7 @@
           <th>Discovery Date</th>
           <th>Issue Name</th>
           <th>Project</th>
+          <th>Assignee</th>
           <th>Design Done Date</th>
         </tr>
       </thead>
@@ -177,6 +179,13 @@
       document.getElementById('generatedAt').textContent = `Last refreshed ${new Date(data.generatedAt).toLocaleString()}`;
     }
 
+    const assigneeSelect = document.getElementById('assigneeFilter');
+    [...new Set(tasks.map(t => t.assignee))].sort().forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a; opt.textContent = a;
+      assigneeSelect.appendChild(opt);
+    });
+
     const projectSelect = document.getElementById('projectFilter');
     [...new Set(tasks.map(t => t.project))].sort().forEach(p => {
       const opt = document.createElement('option');
@@ -198,11 +207,13 @@
     const emptyState = document.getElementById('emptyState');
 
     function render() {
+      const assignee = assigneeSelect.value;
       const project = projectSelect.value;
       const quarter = quarterSelect.value;
       const search = searchInput.value.trim().toLowerCase();
 
       const filtered = tasks.filter(t => {
+        if (assignee && t.assignee !== assignee) return false;
         if (project && t.project !== project) return false;
         if (quarter && quarterOf(t.discoveryDate) !== quarter) return false;
         if (search && !(`${t.key} ${t.summary}`.toLowerCase().includes(search))) return false;
@@ -216,6 +227,7 @@
           <td>${formatMonthYear(t.discoveryDate)}</td>
           <td><a class="task-link" href="${t.url}" target="_blank" rel="noopener">${t.summary}</a></td>
           <td class="secondary">${t.project}</td>
+          <td class="secondary">${t.assignee}</td>
           <td>${formatMonthYear(t.designDoneDate)}</td>
         `;
         tbody.appendChild(tr);
@@ -224,6 +236,7 @@
       emptyState.style.display = filtered.length ? 'none' : 'block';
     }
 
+    assigneeSelect.addEventListener('change', render);
     projectSelect.addEventListener('change', render);
     quarterSelect.addEventListener('change', render);
     searchInput.addEventListener('input', render);
