@@ -3,108 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Year end Work Dashboard</title>
-<style>
-  :root {
-    --bg: #ffffff;
-    --border: #e3e3e3;
-    --text-primary: #111111;
-    --text-secondary: #6b6b6b;
-    --accent: #2563eb;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
-  h1 {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 0 0 24px;
-  }
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-  .card {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-  }
-  .card .label {
-    color: var(--text-secondary);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    margin-bottom: 6px;
-  }
-  .card .value {
-    font-size: 20px;
-    font-weight: 600;
-  }
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  select, input[type="search"] {
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    font-size: 13px;
-    color: var(--text-primary);
-    background: var(--bg);
-  }
-  input[type="search"] {
-    flex: 1;
-    min-width: 200px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  th, td {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  th {
-    color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  td.secondary { color: var(--text-secondary); }
-  a.task-link {
-    color: var(--text-primary);
-    text-decoration: none;
-    border-bottom: 1px solid var(--border);
-  }
-  a.task-link:hover { border-bottom-color: var(--accent); color: var(--accent); }
-  .empty {
-    color: var(--text-secondary);
-    padding: 24px 0;
-    text-align: center;
-  }
-  .meta {
-    color: var(--text-secondary);
-    font-size: 12px;
-    margin-top: 24px;
-  }
-</style>
+<title>Creative team's year-end work dashboard</title>
+<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="wrap">
-    <h1>Year end Work Dashboard</h1>
+    <h1>Creative team's year-end work dashboard</h1>
 
     <div class="cards">
       <div class="card">
@@ -121,52 +25,25 @@
       </div>
     </div>
 
-    <div class="controls">
-      <select id="assigneeFilter"><option value="">All assignees</option></select>
-      <select id="projectFilter"><option value="">All projects</option></select>
-      <select id="quarterFilter"><option value="">All quarters</option></select>
-      <input type="search" id="searchInput" placeholder="Search tasks…" />
-    </div>
-
     <table>
       <thead>
         <tr>
-          <th>Discovery Date</th>
-          <th>Issue Name</th>
-          <th>Project</th>
-          <th>Assignee</th>
-          <th>Design Done Date</th>
+          <th>Designer</th>
+          <th>Tasks</th>
+          <th>Projects</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
-    <div class="empty" id="emptyState" style="display:none;">No tasks match these filters.</div>
+    <div class="empty" id="emptyState" style="display:none;">No data yet — run the "Refresh JIRA dashboard data" workflow.</div>
 
     <div class="meta" id="generatedAt"></div>
   </div>
 
+<script src="dashboard.js"></script>
 <script>
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  function formatMonthYear(iso) {
-    const d = new Date(iso);
-    return `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-  }
-
-  function quarterOf(iso) {
-    const d = new Date(iso);
-    const q = Math.floor(d.getUTCMonth() / 3) + 1;
-    return `Q${q} ${d.getUTCFullYear()}`;
-  }
-
-  function quarterSortKey(label) {
-    const [q, y] = label.split(' ');
-    return Number(y) * 10 + Number(q[1]);
-  }
-
   async function init() {
-    const res = await fetch('data.json', { cache: 'no-store' });
-    const data = await res.json();
+    const data = await loadDashboardData();
     const tasks = data.tasks || [];
 
     document.getElementById('cardTotal').textContent = tasks.length;
@@ -179,72 +56,32 @@
       document.getElementById('generatedAt').textContent = `Last refreshed ${new Date(data.generatedAt).toLocaleString()}`;
     }
 
-    const assigneeSelect = document.getElementById('assigneeFilter');
-    [...new Set(tasks.map(t => t.assignee))].sort().forEach(a => {
-      const opt = document.createElement('option');
-      opt.value = a; opt.textContent = a;
-      assigneeSelect.appendChild(opt);
+    const byDesigner = new Map();
+    tasks.forEach(t => {
+      if (!byDesigner.has(t.assignee)) byDesigner.set(t.assignee, { tasks: 0, projects: new Set() });
+      const entry = byDesigner.get(t.assignee);
+      entry.tasks += 1;
+      entry.projects.add(t.project);
     });
 
-    const projectSelect = document.getElementById('projectFilter');
-    [...new Set(tasks.map(t => t.project))].sort().forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p; opt.textContent = p;
-      projectSelect.appendChild(opt);
-    });
+    const rows = [...byDesigner.entries()].sort((a, b) => b[1].tasks - a[1].tasks);
 
-    const quarterSelect = document.getElementById('quarterFilter');
-    [...new Set(tasks.map(t => quarterOf(t.discoveryDate)))]
-      .sort((a, b) => quarterSortKey(a) - quarterSortKey(b))
-      .forEach(q => {
-        const opt = document.createElement('option');
-        opt.value = q; opt.textContent = q;
-        quarterSelect.appendChild(opt);
-      });
-
-    const searchInput = document.getElementById('searchInput');
     const tbody = document.getElementById('tableBody');
     const emptyState = document.getElementById('emptyState');
-
-    function render() {
-      const assignee = assigneeSelect.value;
-      const project = projectSelect.value;
-      const quarter = quarterSelect.value;
-      const search = searchInput.value.trim().toLowerCase();
-
-      const filtered = tasks.filter(t => {
-        if (assignee && t.assignee !== assignee) return false;
-        if (project && t.project !== project) return false;
-        if (quarter && quarterOf(t.discoveryDate) !== quarter) return false;
-        if (search && !(`${t.key} ${t.summary}`.toLowerCase().includes(search))) return false;
-        return true;
-      });
-
-      tbody.innerHTML = '';
-      filtered.forEach(t => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${formatMonthYear(t.discoveryDate)}</td>
-          <td><a class="task-link" href="${t.url}" target="_blank" rel="noopener">${t.summary}</a></td>
-          <td class="secondary">${t.project}</td>
-          <td class="secondary">${t.assignee}</td>
-          <td>${formatMonthYear(t.designDoneDate)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      emptyState.style.display = filtered.length ? 'none' : 'block';
-    }
-
-    assigneeSelect.addEventListener('change', render);
-    projectSelect.addEventListener('change', render);
-    quarterSelect.addEventListener('change', render);
-    searchInput.addEventListener('input', render);
-    render();
+    tbody.innerHTML = '';
+    rows.forEach(([name, stats]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><a class="designer-link" href="assignee.html?name=${encodeURIComponent(name)}">${name}</a></td>
+        <td>${stats.tasks}</td>
+        <td class="secondary">${stats.projects.size}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    emptyState.style.display = rows.length ? 'none' : 'block';
   }
 
   init().catch(err => {
-    document.getElementById('tableBody').innerHTML = '';
     document.getElementById('emptyState').textContent = 'Could not load data.json — run the "Refresh JIRA dashboard data" workflow first.';
     document.getElementById('emptyState').style.display = 'block';
     console.error(err);

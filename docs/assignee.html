@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Year-end work dashboard</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <a class="back-link" href="index.html">&larr; Back to team dashboard</a>
+    <h1 id="pageTitle">Year-end work dashboard</h1>
+
+    <div class="cards">
+      <div class="card">
+        <div class="label">Total Tasks</div>
+        <div class="value" id="cardTotal">–</div>
+      </div>
+      <div class="card">
+        <div class="label">Projects</div>
+        <div class="value" id="cardProjects">–</div>
+      </div>
+      <div class="card">
+        <div class="label">Reporting Window</div>
+        <div class="value" id="cardWindow">–</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <select id="projectFilter"><option value="">All projects</option></select>
+      <select id="quarterFilter"><option value="">All quarters</option></select>
+      <input type="search" id="searchInput" placeholder="Search tasks…" />
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Discovery Date</th>
+          <th>Issue Name</th>
+          <th>Project</th>
+          <th>Design Done Date</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty" id="emptyState" style="display:none;">No tasks match these filters.</div>
+
+    <div class="meta" id="generatedAt"></div>
+  </div>
+
+<script src="dashboard.js"></script>
+<script>
+  async function init() {
+    const name = new URLSearchParams(location.search).get('name');
+    if (!name) {
+      document.getElementById('emptyState').textContent = 'No designer specified. Go back and click a name from the team dashboard.';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    document.title = `${name}'s year-end dashboard`;
+    document.getElementById('pageTitle').textContent = `${name}'s year-end dashboard`;
+
+    const data = await loadDashboardData();
+    const tasks = (data.tasks || []).filter(t => t.assignee === name);
+
+    document.getElementById('cardTotal').textContent = tasks.length;
+    document.getElementById('cardProjects').textContent = new Set(tasks.map(t => t.project)).size;
+    if (data.reportingWindow) {
+      document.getElementById('cardWindow').textContent =
+        `${formatMonthYear(data.reportingWindow.start)} – ${formatMonthYear(data.reportingWindow.end)}`;
+    }
+    if (data.generatedAt) {
+      document.getElementById('generatedAt').textContent = `Last refreshed ${new Date(data.generatedAt).toLocaleString()}`;
+    }
+
+    const projectSelect = document.getElementById('projectFilter');
+    [...new Set(tasks.map(t => t.project))].sort().forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p; opt.textContent = p;
+      projectSelect.appendChild(opt);
+    });
+
+    const quarterSelect = document.getElementById('quarterFilter');
+    [...new Set(tasks.map(t => quarterOf(t.discoveryDate)))]
+      .sort((a, b) => quarterSortKey(a) - quarterSortKey(b))
+      .forEach(q => {
+        const opt = document.createElement('option');
+        opt.value = q; opt.textContent = q;
+        quarterSelect.appendChild(opt);
+      });
+
+    const searchInput = document.getElementById('searchInput');
+    const tbody = document.getElementById('tableBody');
+    const emptyState = document.getElementById('emptyState');
+
+    function render() {
+      const project = projectSelect.value;
+      const quarter = quarterSelect.value;
+      const search = searchInput.value.trim().toLowerCase();
+
+      const filtered = tasks.filter(t => {
+        if (project && t.project !== project) return false;
+        if (quarter && quarterOf(t.discoveryDate) !== quarter) return false;
+        if (search && !(`${t.key} ${t.summary}`.toLowerCase().includes(search))) return false;
+        return true;
+      });
+
+      tbody.innerHTML = '';
+      filtered.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${formatMonthYear(t.discoveryDate)}</td>
+          <td><a class="task-link" href="${t.url}" target="_blank" rel="noopener">${t.summary}</a></td>
+          <td class="secondary">${t.project}</td>
+          <td>${formatMonthYear(t.designDoneDate)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      emptyState.style.display = filtered.length ? 'none' : 'block';
+    }
+
+    projectSelect.addEventListener('change', render);
+    quarterSelect.addEventListener('change', render);
+    searchInput.addEventListener('input', render);
+    render();
+  }
+
+  init().catch(err => {
+    document.getElementById('emptyState').textContent = 'Could not load data.json — run the "Refresh JIRA dashboard data" workflow first.';
+    document.getElementById('emptyState').style.display = 'block';
+    console.error(err);
+  });
+</script>
+</body>
+</html>
