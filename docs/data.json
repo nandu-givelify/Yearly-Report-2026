@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-28T19:06:24.314Z",
+  "generatedAt": "2026-08-28T19:14:06.228Z",
   "reportingWindow": {
     "start": "2025-08-01",
     "end": "2026-08-31"
@@ -11,7 +11,17 @@
       "project": "ORION",
       "discoveryDate": "2026-08-06T12:19:52.026Z",
       "designDoneDate": "2026-08-18T14:42:05.410Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-432"
+    },
+    {
+      "key": "GDS-38",
+      "summary": "Test new Foundation colors",
+      "project": "GDS",
+      "discoveryDate": "2026-07-29T15:34:47.896Z",
+      "designDoneDate": "2026-07-29T15:34:47.896Z",
+      "hadDiscovery": false,
+      "url": "https://givelify15.atlassian.net/browse/GDS-38"
     },
     {
       "key": "NOVA-479",
@@ -19,6 +29,7 @@
       "project": "NOVA",
       "discoveryDate": "2026-07-27T12:42:47.115Z",
       "designDoneDate": "2026-08-18T14:41:52.161Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/NOVA-479"
     },
     {
@@ -27,6 +38,7 @@
       "project": "NOVA",
       "discoveryDate": "2026-07-13T16:47:22.240Z",
       "designDoneDate": "2026-07-28T16:52:30.976Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/NOVA-402"
     },
     {
@@ -35,6 +47,7 @@
       "project": "ORION",
       "discoveryDate": "2026-07-01T15:36:56.394Z",
       "designDoneDate": "2026-07-13T16:48:09.396Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-380"
     },
     {
@@ -43,6 +56,7 @@
       "project": "ORION",
       "discoveryDate": "2026-06-24T15:33:08.311Z",
       "designDoneDate": "2026-07-13T16:48:15.290Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-375"
     },
     {
@@ -51,6 +65,7 @@
       "project": "GDS",
       "discoveryDate": "2026-04-17T16:19:13.170Z",
       "designDoneDate": "2026-05-20T15:33:40.803Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/GDS-11"
     },
     {
@@ -59,6 +74,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:17:33.809Z",
       "designDoneDate": "2026-06-17T14:50:32.180Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-187"
     },
     {
@@ -67,6 +83,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:16:52.411Z",
       "designDoneDate": "2026-06-17T14:50:45.735Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-186"
     },
     {
@@ -75,6 +92,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:16:31.564Z",
       "designDoneDate": "2026-06-17T14:50:28.253Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-185"
     },
     {
@@ -83,6 +101,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:16:20.615Z",
       "designDoneDate": "2026-06-17T14:50:41.468Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-184"
     },
     {
@@ -91,6 +110,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:16:02.916Z",
       "designDoneDate": "2026-06-17T14:50:39.458Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-183"
     },
     {
@@ -99,6 +119,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:15:23.624Z",
       "designDoneDate": "2026-06-17T14:50:36.340Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-181"
     },
     {
@@ -107,6 +128,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:15:14.532Z",
       "designDoneDate": "2026-06-17T14:50:48.200Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-180"
     },
     {
@@ -115,6 +137,7 @@
       "project": "ORION",
       "discoveryDate": "2026-04-01T18:15:04.731Z",
       "designDoneDate": "2026-06-17T14:50:34.661Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-179"
     },
     {
@@ -123,6 +146,7 @@
       "project": "ORION",
       "discoveryDate": "2026-03-23T20:24:00.559Z",
       "designDoneDate": "2026-07-13T16:48:19.971Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-147"
     },
     {
@@ -131,15 +155,17 @@
       "project": "ORION",
       "discoveryDate": "2026-03-09T20:51:40.850Z",
       "designDoneDate": "2026-06-17T14:50:59.657Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-97"
     },
     {
-      "key": "GDS-7",
-      "summary": "Button component Redesign",
-      "project": "GDS",
-      "discoveryDate": "2026-02-19T22:45:28.880Z",
-      "designDoneDate": "2025-02-13T21:11:03.072Z",
-      "url": "https://givelify15.atlassian.net/browse/GDS-7"
+      "key": "ORION-22",
+      "summary": "Cover Photo Upload",
+      "project": "ORION",
+      "discoveryDate": "2026-02-23T16:58:53.070Z",
+      "designDoneDate": "2026-02-23T16:58:53.070Z",
+      "hadDiscovery": false,
+      "url": "https://givelify15.atlassian.net/browse/ORION-22"
     },
     {
       "key": "ORION-5",
@@ -147,6 +173,7 @@
       "project": "ORION",
       "discoveryDate": "2026-02-18T10:57:03.752Z",
       "designDoneDate": "2026-03-04T15:17:05.251Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-5"
     },
     {
@@ -155,7 +182,44 @@
       "project": "ORION",
       "discoveryDate": "2025-12-23T15:57:42.668Z",
       "designDoneDate": "2026-03-04T15:17:02.219Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-6"
+    },
+    {
+      "key": "GET-5660",
+      "summary": "App Install on OGA - app as a step",
+      "project": "GET",
+      "discoveryDate": "2025-10-13T18:53:06.120Z",
+      "designDoneDate": "2025-10-13T18:53:06.120Z",
+      "hadDiscovery": false,
+      "url": "https://givelify15.atlassian.net/browse/GET-5660"
+    },
+    {
+      "key": "GET-5131",
+      "summary": "Design Spike - Refine Fonts for Givelify Design Foundations",
+      "project": "GET",
+      "discoveryDate": "2025-09-17T15:21:16.259Z",
+      "designDoneDate": "2025-09-17T15:21:16.259Z",
+      "hadDiscovery": false,
+      "url": "https://givelify15.atlassian.net/browse/GET-5131"
+    },
+    {
+      "key": "GET-5690",
+      "summary": "Assets for UnionPay and JCB Cards",
+      "project": "GET",
+      "discoveryDate": "2025-09-17T15:02:08.267Z",
+      "designDoneDate": "2025-09-17T15:02:08.267Z",
+      "hadDiscovery": false,
+      "url": "https://givelify15.atlassian.net/browse/GET-5690"
+    },
+    {
+      "key": "GET-5608",
+      "summary": "UI issues on GP Profile Screen",
+      "project": "GET",
+      "discoveryDate": "2025-09-09T16:27:36.980Z",
+      "designDoneDate": "2025-09-09T16:27:36.980Z",
+      "hadDiscovery": false,
+      "url": "https://givelify15.atlassian.net/browse/GET-5608"
     },
     {
       "key": "GET-5599",
@@ -163,6 +227,7 @@
       "project": "GET",
       "discoveryDate": "2025-08-28T14:32:08.813Z",
       "designDoneDate": "2025-09-19T16:08:38.497Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/GET-5599"
     },
     {
@@ -171,6 +236,7 @@
       "project": "ORION",
       "discoveryDate": "2025-08-11T15:07:30.192Z",
       "designDoneDate": "2026-02-23T16:55:58.146Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-18"
     },
     {
@@ -179,7 +245,26 @@
       "project": "ORION",
       "discoveryDate": "2025-08-07T20:51:17.891Z",
       "designDoneDate": "2026-03-11T15:37:12.583Z",
+      "hadDiscovery": true,
       "url": "https://givelify15.atlassian.net/browse/ORION-8"
+    },
+    {
+      "key": "GET-5139",
+      "summary": "Sign In - from Givelify website",
+      "project": "GET",
+      "discoveryDate": "2025-06-18T15:04:43.233Z",
+      "designDoneDate": "2025-07-24T18:19:08.233Z",
+      "hadDiscovery": true,
+      "url": "https://givelify15.atlassian.net/browse/GET-5139"
+    },
+    {
+      "key": "ORION-20",
+      "summary": "GP signup flow - Search (2.0)",
+      "project": "ORION",
+      "discoveryDate": "2025-03-19T13:23:58.709Z",
+      "designDoneDate": "2026-02-23T16:57:33.863Z",
+      "hadDiscovery": true,
+      "url": "https://givelify15.atlassian.net/browse/ORION-20"
     }
   ]
 }
